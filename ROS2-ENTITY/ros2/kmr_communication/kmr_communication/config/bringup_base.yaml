@@ -25,9 +25,9 @@ camera_node:
 
 kmp_odometry_node:
   ros__parameters:
-    id: 'kmp_odometry_id' # Robot ID
-    port: 'kmp_odometry_port'
-    KMR/ip: 'kmp_odometry_ip'
+    id: 'kmp_odom_id' # Robot ID
+    port: 'kmp_odom_port'
+    KMR/ip: 'kmp_odom_ip'
 
 kmp_laserscan_node:
   ros__parameters:
