@@ -25,6 +25,7 @@ import org.apache.log4j.BasicConfigurator;
 // Implementated classes
 import kmr.test.KmpCommander;
 import kmr.test.LbrCommander;
+import kmr.test.KMP_sensor_reader; //Daniel	
 
 //RoboticsAPI
 import com.kuka.roboticsAPI.annotations.*;
@@ -60,6 +61,7 @@ public class KmpApp extends RoboticsAPIApplication {
 	// Implemented node classes
 	KmpCommander kmp_commander;
 	LbrCommander lbr_commander;
+	KMP_sensor_reader kmp_sensor_reader; //Daniel
 	
 	// Check if application is paused:
 	@Inject
@@ -70,7 +72,10 @@ public class KmpApp extends RoboticsAPIApplication {
 
 	// Ports
 	int kmp_commander_port = 30002;
+	int kmp_laser_port = 30003; //Daniel
+	int kmp_odometry_port = 30004; //Daniel
 	int lbr_commander_port = 30005;
+	
 	
 	// IP-address
 	String remote_ip = "172.31.1.69";
@@ -90,6 +95,7 @@ public class KmpApp extends RoboticsAPIApplication {
 		lbr = getContext().getDeviceFromType(LBR.class);	
 		
 		// Create nodes for communication
+		// kmp_commander = new KMP_commander(kmp);
 		kmp_commander = new KmpCommander(remote_ip, kmp_commander_port, kmp, connection);
 		lbr_commander = new LbrCommander(remote_ip, lbr_commander_port, lbr, connection, getApplicationData().getFrame("/DrivePos"));
 
@@ -107,6 +113,10 @@ public class KmpApp extends RoboticsAPIApplication {
 				break;
 			}				
 		}
+		// Establish remaining nodes Daniel
+		if(AppRunning){
+			kmp_sensor_reader = new KMP_sensor_reader(kmp_laser_port, kmp_odometry_port, connection, connection);
+		}
 	}
 	
 	public void run() {
@@ -116,10 +126,6 @@ public class KmpApp extends RoboticsAPIApplication {
 
 		kmp_commander.setPriority(Thread.MAX_PRIORITY);
 		lbr_commander.setPriority(Thread.MAX_PRIORITY);
-
-		// Start all connected nodes
-		//kmp_commander.run();
-		//lbr_commander.run();
 		
 		if(!(kmp_commander == null)){
 			if(kmp_commander.isSocketConnected()) {
@@ -132,7 +138,14 @@ public class KmpApp extends RoboticsAPIApplication {
 				lbr_commander.start();
 			}
 		}
+		if(!(kmp_sensor_reader ==null)){ //Daniel
+			if(kmp_sensor_reader.isSocketConnected()) {
+				kmp_sensor_reader.start();
+			}
+		}
 		
+		// Prioritizes odometry and laser scan readings.
+		kmp_sensor_reader.setPriority(Thread.MAX_PRIORITY); //Daniel
 
 		while(AppRunning) {    
 			AppRunning = (!(kmp_commander.getShutdown() || lbr_commander.getShutdown()));
@@ -146,14 +159,16 @@ public class KmpApp extends RoboticsAPIApplication {
 
 		kmp_commander.close();
 		lbr_commander.close();
+		kmp_sensor_reader.close();//Daniel
 	
     	System.out.println("Application terminated");
     	    	
-    	try {
+    	/*try {
     		dispose();
     	} catch(Exception e) {
     		System.out.println("Application could not be terminated cleanly: " + e);
     	}
+    	*/
 	}
 	
 	private void setAutomaticallyResumable(boolean enable)

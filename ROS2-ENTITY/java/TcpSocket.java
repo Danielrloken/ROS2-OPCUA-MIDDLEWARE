@@ -37,7 +37,9 @@ public class TcpSocket implements ISocket {
 	public Socket connect() {
 		while(true) {
 			try{
-				TCPConn = new Socket(this.remote_ip, COMport);
+				String remotePC = this.remote_ip; //"192.168.10.67";
+
+				TCPConn = new Socket(remotePC, COMport);
 				TCPConn.setReuseAddress(true);
 				System.out.println(this.nodename + " connecting to ROS over TCP on port: "+ COMport);
 				break;
@@ -59,10 +61,15 @@ public class TcpSocket implements ISocket {
     }
 	
 	public void send_message(String buffer) {
-		int len = (this.encode(buffer)).length;
-		String send_string = String.format("%010d", len) + " " + buffer;
-		outputStream.write(send_string);
-		outputStream.flush();
+		if(buffer.equals("shutdown")){
+			outputStream.write(buffer);
+			outputStream.flush();
+		} else {
+			int len = (this.encode(buffer)).length;
+			String send_string = String.format("%010d", len) + " " + buffer;
+			outputStream.write(send_string);
+			outputStream.flush();			
+		}
 	}
 	
 	@Override
@@ -72,20 +79,20 @@ public class TcpSocket implements ISocket {
 			while(!this.inputStream.ready()){}
 			line=this.inputStream.readLine();
 			return line;
-		} catch(Exception e) {
-			System.out.println(this.nodename+ " could not receive message from TCP connection on port: "+ this.COMport + " Error: " +e);
-			return "error";
-		}
+		
+			} catch(Exception e) {
+				System.out.println(this.nodename+ " could not receive message from TCP connection on port: "+ this.COMport + " Error: " +e);
+				return "error";
+			}
 	}	
      
 	public void close() {
 		try {
 			TCPConn.close();
 			System.out.println("TCP connection to ROS closed port: " + this.COMport);
-			send_message("shutdown")
 			isConnected=false;
 		} catch (Exception e) {
-			System.out.println("ERROR closing the TCP communication of  " + this.nodename+ "  on port: " + this.COMport + " error: " + e);
+			System.out.println("ERROR closing the TCP communication of  "+ this.nodename+ "  on port: " + this.COMport + " error: " + e);
 		}
 	}
 	

@@ -14,9 +14,13 @@
 // limitations under the License.
 package kmr.test;
 
+
+import API_ROS2_Sunrise.TCPSocket;
+import API_ROS2_Sunrise.UDPSocket;
 import kmr.test.ISocket;
 import kmr.test.TcpSocket;
-import kmr.test.UdpSocket;
+
+
 
 public abstract class Node extends Thread{
 	
@@ -37,12 +41,32 @@ public abstract class Node extends Thread{
 	private String remote_ip;
 	public static int connection_timeout = 5000;
 	
+	// For KMP sensor reader:
+	protected ISocket laser_socket;//Daniel
+	protected ISocket odometry_socket;//Daniel
+	private int KMP_laser_port;//Daniel
+	private int KMP_odometry_port;//Daniel
+	private String LaserConnectionType;//Daniel
+	private String OdometryConnectionType;//Daniel
+	
 	protected String node_name;
 	
 	public Node(int port1, String Conn1, int port2, String Conn2, String nodeName){
+		if(node_name == null){//Daniel
+			System.out.println("This is a test, node_name is null in Node.");//Daniel
+		}//Daniel
+		this.KMP_laser_port = port1;//Daniel
+		this.KMP_odometry_port = port2;//Daniel
+		this.LaserConnectionType = Conn1;//Daniel
+		this.OdometryConnectionType = Conn2;//Daniel
+		//this.node_name = node_name;
 		this.node_name = nodeName;
 		setShutdown(false);
 		setEmergencyStop(false);
+		
+		
+		createSocket("Laser");//Daniel
+		createSocket("Odom");//Daniel
 	}
 	
 	public Node(String remote_ip, int port, String Conn, String nodeName) {
@@ -60,8 +84,21 @@ public abstract class Node extends Thread{
 		if (this.ConnectionType == "TCP") {
 			this.socket = new TcpSocket(this.remote_ip, this.port, this.node_name);
 		}
-		else if (this.ConnectionType == "UDP") {
-			this.socket = new UdpSocket(this.remote_ip, this.port, this.node_name);
+	}
+	public void createSocket(String Type){
+		if (Type=="Laser"){
+			if(LaserConnectionType == "TCP") {
+				this.laser_socket = new TCPSocket(KMP_laser_port, this.node_name);
+			}else {
+				this.laser_socket = new UDPSocket(KMP_laser_port, this.node_name);
+			}
+		}else if(Type=="Odom") {
+			if(OdometryConnectionType == "TCP") {
+				this.odometry_socket = new TCPSocket(KMP_odometry_port, this.node_name);
+
+			}else {
+				this.odometry_socket = new UDPSocket(KMP_odometry_port, this.node_name);
+			}
 		}
 	}
 	

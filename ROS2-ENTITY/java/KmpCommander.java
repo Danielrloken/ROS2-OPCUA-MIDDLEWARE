@@ -24,6 +24,11 @@ import com.kuka.roboticsAPI.deviceModel.kmp.KmpOmniMove;
 import com.kuka.roboticsAPI.executionModel.ICommandContainer;
 import com.kuka.roboticsAPI.motionModel.kmp.MobilePlatformRelativeMotion;
 
+//Daniel
+import com.kuka.roboticsAPI.motionModel.kmp.MobilePlatformPosition;
+//import javax.task.Inject;
+//import com.kuka.task.ITaskLogger;
+
 
 public class KmpCommander extends Node {
 
@@ -64,7 +69,7 @@ public class KmpCommander extends Node {
 			String Commandstr = this.socket.receive_message(); 
 	    	String []splt = Commandstr.split(" ");
 	    	if(!getShutdown() && !closed) {
-		    	if ((splt[0]).equals("shutdown")) {
+		    	if ((splt[0]).equals("")) { //HER SKAL DET EGENTLIG STÅ "shutdown"!!!!!!!!!!!
 		    		System.out.println("KMP received shutdown");
 					setShutdown(true);	
 					break;
@@ -74,6 +79,12 @@ public class KmpCommander extends Node {
 					setNewVelocity(Commandstr);
 					System.out.println(Commandstr + "asd\n");
 				}
+		    	//this.Logger = getLoer();
+		    	MobilePlatformPosition MobilePlatformRelativeMotion_mesage=MobilePlatformRelativeMotion.getCoveredDistance(KMP_currentMotion);
+				System.out.println("Covered distance " + "X=" + MobilePlatformRelativeMotion_mesage.getX() + ", Y=" + MobilePlatformRelativeMotion_mesage.getY() +", Theta=" + MobilePlatformRelativeMotion_mesage.getTheta());
+		    	//this.socket.send_message(MobilePlatformRelativeMotion_mesage); 
+			    //get_logger().info("Covered distance " + "X=" + MobilePlatformRelativeMotion_mesage.getX() + ", Y=" + MobilePlatformRelativeMotion_mesage.getY() +", Theta=" + MobilePlatformRelativeMotion_mesage.getTheta());
+			    //this.socket.send_message("Covered distance " + "X=" + MobilePlatformRelativeMotion_mesage.getX() + ", Y=" + MobilePlatformRelativeMotion_mesage.getY() +", Theta=" + MobilePlatformRelativeMotion_mesage.getTheta());
 	    	}
 		}
 		
