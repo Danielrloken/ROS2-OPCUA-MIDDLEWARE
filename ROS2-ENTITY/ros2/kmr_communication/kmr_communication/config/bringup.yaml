@@ -1,0 +1,36 @@
+connection_params:
+  ros__parameters:
+
+    connection_type: 'TCP'
+    robot: 'KMR'
+
+lbr_command_node:
+  ros__parameters:
+    id: '1' # Robot ID
+    port: '50007'
+    KMR/ip: '127.0.0.1'
+
+kmp_command_node:
+  ros__parameters:
+    id: '1' # Robot ID
+    port: '50008'
+    KMR/ip: '127.0.0.1'
+
+    #add Daniel
+kmp_odometry_node:
+  ros__parameters:
+    id: '1' # Robot ID
+    port: '50009'
+    KMR/ip: '127.0.0.1'
+
+kmp_laserscan_node:
+  ros__parameters:
+    id: '1' # Robot ID
+    port: '50010'
+    KMR/ip: '127.0.0.1'
+  #end Daniel
+
+camera_node:
+  ros__parameters:
+    id: '1'
+    udp/ip: '10.22.23.227:5000'
