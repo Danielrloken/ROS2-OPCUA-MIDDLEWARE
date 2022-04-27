@@ -7,7 +7,7 @@ build_type=$1
 run_type=$2
 
 # Prod parameters as default 
-opc_ua_domain="andrcar-master.ivt.ntnu.no"
+opc_ua_domain="77.16.23.39"
 
 if [ $build_type = 'source_' ]
 then
